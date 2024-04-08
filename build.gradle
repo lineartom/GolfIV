@@ -26,6 +26,7 @@ dependencies {
 		//officialMojangMappings()
 	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.3.5")))
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	[

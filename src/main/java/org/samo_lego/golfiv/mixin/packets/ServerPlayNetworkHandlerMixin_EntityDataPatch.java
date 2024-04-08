@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
+import net.minecraft.server.network.ServerCommonNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.MathHelper;
@@ -22,7 +23,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.samo_lego.golfiv.event.S2CPacket.S2CPacketCallback;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.samo_lego.golfiv.GolfIV.golfConfig;
@@ -34,16 +37,13 @@ import static org.samo_lego.golfiv.casts.ItemStackChecker.fakeStack;
  * @author Ampflower
  * @see <a href="https://wiki.vg/Entity_metadata">Entity Tracker info</a>
  **/
-@Mixin(ServerPlayNetworkHandler.class)
+@Mixin(ServerCommonNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin_EntityDataPatch {
     private static final TrackedData<Float> LIVING_ENTITY_HEALTH = LivingEntityAccessor.getHealth();
     private static final TrackedData<Float> PLAYER_ENTITY_ABSORPTION = PlayerEntityAccessor.getAbsorption();
     private static final TrackedData<ItemStack> ITEM_ENTITY_STACK = ItemEntityAccessor.getSTACK();
 
-    @Shadow
-    public abstract ServerPlayerEntity getPlayer();
-
-    @Inject(method = "sendPacket(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("TAIL"))
+    @Inject(method = "send(Lnet/minecraft/network/packet/Packet;Lnet/minecraft/network/PacketCallbacks;)V", at = @At("TAIL"))
     private void golfIV$onConstruction(Packet<?> unknownPacket, @Nullable PacketCallbacks callbacks, CallbackInfo ci) {
 
         if (unknownPacket instanceof EntityTrackerUpdateS2CPacket packet) {
@@ -51,8 +51,16 @@ public abstract class ServerPlayNetworkHandlerMixin_EntityDataPatch {
             // This list is potentially null, so, to mitigate any NPEs, check if it is null before continuing.
             if (trackedValues == null) return;
 
+            ServerPlayerEntity player;
+            try {
+                Field player_field = this.getClass().getDeclaredField("player");
+                player = (ServerPlayerEntity)player_field.get(this);
+                S2CPacketCallback.EVENT.invoker().preSendPacket(packet, player);
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                return;
+            }
 
-            Entity entity = this.getPlayer().getEntityWorld().getEntityById(packet.id());
+            Entity entity = player.getEntityWorld().getEntityById(packet.id());
 
             if (golfConfig.packet.removeHealthTags && entity instanceof LivingEntity livingEntity && entity.isAlive() && !(entity instanceof Saddleable)) {
                 trackedValues.removeIf(trackedValue -> trackedValue.value() == LIVING_ENTITY_HEALTH);

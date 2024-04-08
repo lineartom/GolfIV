@@ -26,10 +26,9 @@ public class EntityEquipmentPatch implements S2CPacketCallback {
      *
      * @param packet packet being sent
      * @param player player getting the packet
-     * @param server Minecraft Server
      */
     @Override
-    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server) {
+    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player) {
         if(golfConfig.packet.removeEquipmentTags && packet instanceof EntityEquipmentUpdateS2CPacket) {
             EntityEquipmentUpdateS2CPacketAccessor packetAccessor = (EntityEquipmentUpdateS2CPacketAccessor) packet;
 

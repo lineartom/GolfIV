@@ -78,9 +78,9 @@ public interface ItemStackChecker {
             cleanBanner(original.getSubNbt(BLOCK_ENTITY_TAG_KEY), fakedStack);
         }
 
-        if (item instanceof SkullItem) {
+        if (item instanceof PlayerHeadItem) {
             // Lets dropping player heads not be a surprising change, and for wearing heads to show the actual skin.
-            cleanSkull(original.getSubNbt(SkullItem.SKULL_OWNER_KEY), fakedStack);
+            cleanSkull(original.getSubNbt(PlayerHeadItem.SKULL_OWNER_KEY), fakedStack);
         }
 
         if (item instanceof CrossbowItem && CrossbowItem.isCharged(original)) {
@@ -176,9 +176,9 @@ public interface ItemStackChecker {
             }
 
             // Transfer SkullProperties.
-            if (item instanceof SkullItem) {
+            if (item instanceof PlayerHeadItem) {
                 flag = false;
-                cleanSkull(stack.getSubNbt(SkullItem.SKULL_OWNER_KEY), fake);
+                cleanSkull(stack.getSubNbt(PlayerHeadItem.SKULL_OWNER_KEY), fake);
             }
 
             if (flag) {
@@ -301,7 +301,7 @@ public interface ItemStackChecker {
      */
     static void cleanSkull(NbtCompound skullOwner, ItemStack faked) {
         if (skullOwner != null) {
-            NbtCompound fakeSkullOwner = faked.getOrCreateSubNbt(SkullItem.SKULL_OWNER_KEY);
+            NbtCompound fakeSkullOwner = faked.getOrCreateSubNbt(PlayerHeadItem.SKULL_OWNER_KEY);
             if (skullOwner.containsUuid("Id")) fakeSkullOwner.putUuid("Id", skullOwner.getUuid("Id"));
             if (skullOwner.contains("Properties", NbtElement.COMPOUND_TYPE)) {
                 NbtCompound skullProperties = skullOwner.getCompound("Properties");

@@ -9,9 +9,9 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public interface S2CPacketCallback {
 
     Event<S2CPacketCallback> EVENT = EventFactory.createArrayBacked(S2CPacketCallback.class,
-        (listeners) -> (packet, player, server) -> {
+        (listeners) -> (packet, player) -> {
             for (S2CPacketCallback listener : listeners) {
-                listener.preSendPacket(packet, player, server);
+                listener.preSendPacket(packet, player);
             }
      });
 
@@ -20,7 +20,6 @@ public interface S2CPacketCallback {
      *
      * @param packet packet being sent
      * @param player player getting the packet
-     * @param server Minecraft Server
      */
-    void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server);
+    void preSendPacket(Packet<?> packet, ServerPlayerEntity player);
 }

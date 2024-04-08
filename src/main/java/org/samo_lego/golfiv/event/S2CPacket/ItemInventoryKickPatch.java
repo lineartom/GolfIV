@@ -42,7 +42,7 @@ public class ItemInventoryKickPatch implements S2CPacketCallback {
      * @see org.samo_lego.golfiv.mixin.illegal_items.ServerPlayNetworkHandlerMixin_CreativeItemsCheck
      */
     @Override
-    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server) {
+    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player) {
         if (!golfConfig.packet.patchItemKickExploit) return;
         if (packet instanceof InventoryS2CPacket inventoryPacket) {
             // The creative player does some weirdness in regards to sending packets.

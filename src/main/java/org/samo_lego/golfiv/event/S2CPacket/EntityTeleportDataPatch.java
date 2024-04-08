@@ -22,9 +22,10 @@ public class EntityTeleportDataPatch implements S2CPacketCallback {
      */
 
     @Override
-    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server) {
+    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player) {
         if(golfConfig.packet.removeTeleportData && packet instanceof EntityPositionS2CPacket) {
             EntityPositionS2CPacketAccessor packetAccessor = (EntityPositionS2CPacketAccessor) packet;
+            MinecraftServer server = player.server;
 
             // Similar to SoundExploitPatch#preSendPacket
             int maxPlayerDistance = server.getPlayerManager().getViewDistance() * 16;

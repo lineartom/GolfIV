@@ -9,6 +9,7 @@ import net.minecraft.util.Formatting;
 import org.samo_lego.golfiv.storage.GolfConfig;
 
 import java.io.File;
+import java.util.function.Supplier;
 
 import static net.minecraft.server.command.CommandManager.literal;
 import static org.samo_lego.golfiv.GolfIV.golfConfig;
@@ -28,11 +29,12 @@ public class GolfCommand {
         golfConfig = GolfConfig.loadConfig(new File(FabricLoader.getInstance().getConfigDir() + "/GolfIV_config.json"));
 
         if(source != null)
-            source.sendFeedback(
-                    Text.literal("Reloaded the config file!")
-                        .formatted(Formatting.GREEN),
-                    false
-            );
+        {
+            Supplier<Text> supplier = () -> 
+                Text.literal("Reloaded the config file!")
+                        .formatted(Formatting.GREEN);
+            source.sendFeedback(supplier, false);
+        }
         return 1;
     }
 }

@@ -22,14 +22,14 @@ public class SoundCoordinatesPatch implements S2CPacketCallback {
      *
      * @param packet packet being sent
      * @param player player getting the packet
-     * @param server Minecraft Server
      */
 
     @Override
-    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player, MinecraftServer server) {
+    public void preSendPacket(Packet<?> packet, ServerPlayerEntity player) {
         if(golfConfig.packet.patchSoundExploits && packet instanceof PlaySoundS2CPacket) {
             PlaySoundS2CPacketAccessor packetAccessor = (PlaySoundS2CPacketAccessor) packet;
             Optional<RegistryKey<SoundEvent>> soundEvt = packetAccessor.getSound().getKey();
+            MinecraftServer server = player.server;
 
             if (soundEvt.isEmpty()) {
                 return;
